@@ -24,7 +24,14 @@ function exitGame() {
   alert("Thank you for playing Quantum Quest!");
 }
 
-window.onload = function() { showScreen('menuPage'); };
+window.onload = function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('screen') === 'mapPage') {
+    showScreen('mapPage');
+  } else {
+    showScreen('menuPage');
+  }
+};
 
 /* -------------------
    ENTANGLIA GAME LOGIC
@@ -45,7 +52,11 @@ let entanglia = {
   sending: false,
 };
 
-/* Entry Point */
+/* Entry Points */
+function openDualon2Game() {
+  window.location.href = '../QTgame/index.html';
+}
+
 function openEntangliaGame() {
   showScreen('gameEntanglia');
   startEntanglia();
