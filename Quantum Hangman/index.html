@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Hangman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #8B5CF6; /* Purple */
+            --secondary: #3B82F6; /* Blue */
+            --success: #10B981; /* Green */
+            --fail: #EF4444; /* Red */
+            --bg: #1F2937; /* Dark Gray */
+            --text-color: #F9FAFB;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            /* --- UPDATED BACKGROUND IMAGE --- */
+            background-image: url("space-background-cute-flat-style-template-with-stars-outer-space_921039-17102(1).avif"); 
+            background-size: cover; /* Ensure the image covers the entire viewport */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Do not tile the image */
+            background-attachment: fixed;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .game-container {
+            background-color: #374151;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Word Display Styling */
+        #wordDisplay {
+            margin: 40px 0;
+            font-size: 3rem;
+            letter-spacing: 10px;
+            min-height: 60px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .letter-slot {
+            margin: 0 5px;
+            border-bottom: 4px solid var(--text-color);
+            min-width: 30px;
+            display: inline-block;
+        }
+
+        .quantum-state {
+            color: var(--secondary);
+            animation: pulse-quantum 1.5s infinite alternate;
+            font-size: 1.8rem;
+            /* Adjust size for multiple letters */
+            letter-spacing: 0; 
+            padding: 0 5px;
+        }
+        
+        @keyframes pulse-quantum {
+            from { opacity: 0.8; text-shadow: 0 0 5px var(--secondary); }
+            to { opacity: 1.0; text-shadow: 0 0 15px var(--secondary); }
+        }
+
+        /* Keyboard Styling */
+        #keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .key-btn {
+            background-color: #4B5563;
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 3px #1F2937;
+            width: 40px;
+        }
+        
+        .key-btn:hover:not(:disabled) {
+            background-color: #6B7280;
+        }
+
+        .key-btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 1px #1F2937;
+        }
+        
+        .key-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            box-shadow: none;
+            background-color: #374151;
+        }
+
+        .key-btn.hit {
+            background-color: var(--success);
+            color: var(--bg);
+        }
+
+        .key-btn.miss {
+            background-color: var(--fail);
+            color: var(--text-color);
+        }
+
+        /* Hangman Display */
+        #hangmanCanvas {
+            border: 2px solid var(--text-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background-color: #374151;
+        }
+
+        /* Message Box */
+        #messageBox {
+            min-height: 50px;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            line-height: 1.3; /* Ensure readability for two lines of text */
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .action-buttons button {
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .action-buttons button:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px rgba(0, 0, 0, 0.4);
+        }
+        
+        #newGameBtn {
+            background-color: var(--success);
+            color: var(--bg);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px #10986e;
+            cursor: pointer;
+        }
+        
+        #hintBtn {
+            background-color: #FBBF24; /* Amber-500 */
+            color: #1F2937; /* Dark Gray text */
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px #D97706; /* Amber-700 */
+            cursor: pointer;
+        }
+
+        #hintBtn:disabled {
+            background-color: #4B5563; /* Gray-600 */
+            color: #9CA3AF; /* Gray-400 */
+            box-shadow: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Quantum Hangman</h1>
+        <p class="text-gray-400">Guess the word before the man is hung. One letter is a **Qubit**—your first guess collapses its state!</p>
+
+        <!-- New: Round and Score Display -->
+        <div id="roundDisplay" class="text-lg font-semibold mb-4 text-purple-300"></div>
+
+        <canvas id="hangmanCanvas" width="200" height="200"></canvas>
+
+        <div id="wordDisplay"></div>
+        
+        <!-- Dedicated Hint Display Area -->
+        <div id="hintDisplay" class="text-sm text-yellow-300 h-5 mt-[-10px] mb-4"></div>
+
+        <div id="messageBox" class="text-lg"></div>
+
+        <div class="action-buttons">
+             <button id="hintBtn" onclick="getHint()" disabled>
+                Collapse Qubit First
+            </button>
+            <button id="newGameBtn" onclick="initGame(true)">Start New Game</button>
+        </div>
+
+        <div id="keyboard"></div>
+
+        <!-- End Game Modal - Fixed position for the popup -->
+        <div id="endGameModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center p-4 z-50">
+            <div class="bg-gray-700 p-8 rounded-xl shadow-2xl w-full max-w-sm text-center transform transition-all scale-100 duration-300">
+                <h2 id="modalTitle" class="text-3xl font-extrabold mb-4 text-purple-400"></h2>
+                <p id="modalScore" class="text-xl mb-6 text-gray-200"></p>
+                <p id="modalMessage" class="text-md mb-8 text-yellow-300"></p>
+                
+                <div class="space-y-3">
+                    <button id="replayGameBtn" onclick="initGame(true); hideEndGameModal()" class="w-full bg-green-500 hover:bg-green-600 text-gray-900 font-bold py-3 rounded-lg transition duration-200 shadow-lg">
+                        Replay Game Series (New Mission)
+                    </button>
+                    <button id="galaxyPageBtn" onclick="returnToGalaxy()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition duration-200 shadow-lg">
+                        Back to Galaxy Page
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Game Configuration & Difficulty Settings ---
+        
+        const WORD_CLUES = {
+            // Theme: Pure Quantum Computing/Physics Terms
+            // Easy Words & Clues
+            "QUBIT": "The fundamental carrier of quantum information.", 
+            "NOISE": "Environmental disturbance that causes errors.",
+            "BLOCH": "Sphere used to visualize a single qubit's state.", 
+            "FLIP": "A common operation that changes a state from 0 to 1.",
+            "GATE": "An operator that manipulates a qubit's state.",
+            "NORM": "The calculated length of the state vector.",
+            // Medium Words & Clues
+            "ENTANGLE": "To link two particles such that measuring one instantly affects the other.", 
+            "HILBERT": "The abstract vector space where quantum states live.", 
+            "HADAMARD": "The essential operation for putting a qubit into superposition.", 
+            "TENSOR": "The product used to describe two independent quantum systems.", 
+            "MEASURE": "The act of observing a qubit, which causes collapse.", 
+            "RANDOM": "The nature of the outcome when a qubit in superposition is observed.",
+            // Hard Words & Clues
+            "COHERENCE": "The essential property allowing superposition and entanglement to exist.",
+            "SUPERPOSITION": "The state of being both 0 and 1 simultaneously.",
+            "UNCERTAINTY": "Principle stating that two complementary properties cannot be known precisely at once.",
+            "HEISENBERG": "Last name of the physicist famous for his uncertainty principle.", 
+            "AZIMUTHAL": "One of the two angles needed to locate a state on the Bloch sphere."
+        };
+
+        const ROUNDS = ["EASY", "MEDIUM", "HARD"];
+        const DIFFICULTY_SETTINGS = {
+            EASY: {
+                words: ["QUBIT", "NOISE", "BLOCH", "FLIP", "GATE", "NORM"], 
+                maxMistakes: 7, 
+                qubitOptions: 5,
+                biasChance: 0.70 // 70% chance of collapsing to the intended letter
+            },
+            MEDIUM: {
+                words: ["ENTANGLE", "HILBERT", "HADAMARD", "TENSOR", "MEASURE", "RANDOM"], 
+                maxMistakes: 6,
+                qubitOptions: 7,
+                biasChance: 0.50 // 50% chance of collapsing to the intended letter
+            },
+            HARD: {
+                words: ["COHERENCE", "SUPERPOSITION", "UNCERTAINTY", "HEISENBERG", "AZIMUTHAL"],
+                maxMistakes: 5, 
+                qubitOptions: 9,
+                biasChance: 0.30 // 30% chance of collapsing to the intended letter
+            }
+        };
+
+        // --- Game State ---
+        let secretWord = ""; 
+        let displayedWord = [];
+        let guessedLetters = new Set();
+        let mistakes = 0;
+        let gameOver = false;
+        let hintUsed = false; 
+        
+        // Multi-Round State
+        let currentRoundIndex = 0; 
+        let totalWins = 0;
+        let totalLosses = 0;
+        
+        // Quantum State
+        let qubitIndex = -1; 
+        let qubitStates = []; 
+        let collapsedState = null; 
+        let collapseMessage = ""; // Stores the result of the quantum collapse permanently for the round
+
+        // --- DOM Elements ---
+        const wordDisplayEl = document.getElementById('wordDisplay');
+        const keyboardEl = document.getElementById('keyboard');
+        const messageBoxEl = document.getElementById('messageBox');
+        const hintDisplayEl = document.getElementById('hintDisplay'); 
+        const hintBtnEl = document.getElementById('hintBtn');         
+        const roundDisplayEl = document.getElementById('roundDisplay');
+        const canvas = document.getElementById('hangmanCanvas');
+        const ctx = canvas.getContext('2d');
+        const newGameBtnEl = document.getElementById('newGameBtn'); 
+        const endGameModalEl = document.getElementById('endGameModal');
+
+
+        // --- Utility Functions ---
+
+        /** Draws the hangman figure based on the number of mistakes. */
+        function drawHangman() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = varToColor('--text-color');
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+
+            // Gallow
+            ctx.beginPath();
+            ctx.moveTo(10, 190);
+            ctx.lineTo(190, 190);
+            ctx.moveTo(30, 190);
+            ctx.lineTo(30, 10);
+            ctx.lineTo(120, 10);
+            ctx.lineTo(120, 30);
+            ctx.stroke();
+
+            const currentSettings = DIFFICULTY_SETTINGS[ROUNDS[currentRoundIndex]];
+            const maxMistakes = currentSettings.maxMistakes;
+
+            const parts = [
+                () => { ctx.beginPath(); ctx.arc(120, 50, 20, 0, Math.PI * 2); ctx.stroke(); }, // Head
+                () => { ctx.beginPath(); ctx.moveTo(120, 70); ctx.lineTo(120, 130); ctx.stroke(); }, // Body
+                () => { ctx.beginPath(); ctx.moveTo(120, 80); ctx.lineTo(100, 110); ctx.stroke(); }, // Left Arm
+                () => { ctx.beginPath(); ctx.moveTo(120, 80); ctx.lineTo(140, 110); ctx.stroke(); }, // Right Arm
+                () => { ctx.beginPath(); ctx.moveTo(120, 130); ctx.lineTo(100, 160); ctx.stroke(); }, // Left Leg
+                () => { ctx.beginPath(); ctx.moveTo(120, 130); ctx.lineTo(140, 160); ctx.stroke(); } // Right Leg
+            ];
+
+            // Calculate how many parts to draw relative to max mistakes (max 6 visible parts)
+            for (let i = 0; i < Math.min(6, Math.ceil(mistakes * 6 / maxMistakes)); i++) {
+                if (parts[i]) {
+                    parts[i]();
+                }
+            }
+        }
+        
+        /** Converts a CSS variable name to its color value. */
+        function varToColor(variable) {
+            return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+        }
+        
+        /** Sets up the secret word, selects the qubit index, and initializes the superposition. */
+        function setupQubitWord() {
+            const difficultyKey = ROUNDS[currentRoundIndex];
+            const currentSettings = DIFFICULTY_SETTINGS[difficultyKey];
+
+            // 1. Choose a random word
+            const wordList = currentSettings.words;
+            secretWord = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
+            
+            // 2. Choose a random index for the qubit letter
+            const minIndex = 1;
+            const maxIndex = secretWord.length - 2;
+            qubitIndex = Math.floor(Math.random() * (maxIndex - minIndex + 1)) + minIndex;
+
+            // 3. Set up the possible states
+            let possibleStates = [];
+            const qubitOptionsCount = currentSettings.qubitOptions;
+            
+            // State A (The original intended letter) is always included first
+            const originalCorrectLetter = secretWord[qubitIndex];
+            possibleStates.push(originalCorrectLetter);
+
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            
+            // Find unique, non-word letters for the remaining states
+            while (possibleStates.length < qubitOptionsCount) {
+                let stateX = '';
+                do {
+                    stateX = alphabet[Math.floor(Math.random() * alphabet.length)];
+                } while (possibleStates.includes(stateX) || secretWord.includes(stateX)); 
+                
+                possibleStates.push(stateX);
+            }
+
+            qubitStates = possibleStates; 
+            
+            // 4. Reset round state
+            mistakes = 0;
+            guessedLetters.clear();
+            gameOver = false;
+            collapsedState = null;
+            collapseMessage = ""; 
+            hintUsed = false; 
+            
+            renderRoundDisplay();
+        }
+
+        /** Renders the current round and score. */
+        function renderRoundDisplay() {
+            const difficultyKey = ROUNDS[currentRoundIndex];
+            roundDisplayEl.innerHTML = `
+                <span class="text-white">Round: </span>
+                <span class="text-yellow-400">${difficultyKey} (${currentRoundIndex + 1}/${ROUNDS.length})</span> 
+                | 
+                <span class="text-white">Score: </span>
+                <span class="text-green-400">${totalWins}W</span>/<span class="text-red-400">${totalLosses}L</span>
+            `;
+        }
+
+
+        /** Renders the word display, showing the qubit state if uncollapsed. */
+        function renderWordDisplay() {
+            wordDisplayEl.innerHTML = '';
+            displayedWord = Array(secretWord.length).fill('');
+            
+            const currentQubitOptions = DIFFICULTY_SETTINGS[ROUNDS[currentRoundIndex]].qubitOptions;
+            
+            for (let i = 0; i < secretWord.length; i++) {
+                const slot = document.createElement('span');
+                slot.classList.add('letter-slot');
+                
+                if (i === qubitIndex && collapsedState === null) {
+                    // Qubit in N-way Superposition
+                    const stateDisplay = qubitStates.join('/');
+                    slot.innerHTML = `<span class="quantum-state">[${stateDisplay}]</span>`;
+                    slot.style.minWidth = `${currentQubitOptions * 18}px`; // Dynamic width based on options
+                } else {
+                    const letter = secretWord[i];
+                    let revealedLetter = '_';
+
+                    // If the letter (or the collapsed state) has been guessed, reveal it.
+                    if (guessedLetters.has(letter)) {
+                        revealedLetter = letter;
+                    }
+                    
+                    // Update display and internal tracking
+                    slot.textContent = revealedLetter;
+                    displayedWord[i] = (revealedLetter !== '_') ? revealedLetter : '';
+                    slot.style.minWidth = '30px'; 
+                }
+                wordDisplayEl.appendChild(slot);
+            }
+        }
+
+        /** Renders the on-screen keyboard. */
+        function renderKeyboard() {
+            keyboardEl.innerHTML = '';
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            alphabet.split('').forEach(letter => {
+                const button = document.createElement('button');
+                button.classList.add('key-btn');
+                button.textContent = letter;
+                button.dataset.letter = letter;
+                button.onclick = () => handleGuess(letter);
+                
+                // If a letter has been guessed, disable and style it
+                if (guessedLetters.has(letter)) {
+                    button.disabled = true;
+                    if (secretWord.includes(letter)) {
+                        button.classList.add('hit');
+                    } else {
+                        button.classList.add('miss');
+                    }
+                }
+                keyboardEl.appendChild(button);
+            });
+        }
+        
+        /** Renders the combined persistent and transient messages. */
+        function renderMessage(transientMsg, isError = false) {
+            let msg = collapseMessage;
+            let bgColor = 'transparent';
+
+            if (transientMsg) {
+                const color = isError ? 'var(--fail)' : 'var(--success)';
+                bgColor = isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+                
+                // Combine collapse message and transient message
+                // collapseMessage will be an empty string before the first guess
+                msg = `${collapseMessage}${collapseMessage ? '<br>' : ''}<span style="color:${color};">${transientMsg}</span>`;
+            } else {
+                // If no transient message, just display the collapse message if it exists
+                msg = collapseMessage;
+            }
+
+            messageBoxEl.innerHTML = msg || `Round ${currentRoundIndex + 1} (${ROUNDS[currentRoundIndex]}) started!`;
+            messageBoxEl.style.backgroundColor = bgColor;
+        }
+
+
+        /** Handles the quantum collapse when the first guess is made. */
+        function handleQuantumMeasurement() {
+            if (collapsedState !== null) return; 
+            
+            const originalCorrectLetter = secretWord[qubitIndex];
+            // distractorStates contains all possible outcomes EXCEPT the originalCorrectLetter (which is qubitStates[0])
+            const distractorStates = qubitStates.slice(1); 
+            
+            let outcome = null;
+            
+            // Get difficulty-specific bias chance
+            const difficultyKey = ROUNDS[currentRoundIndex];
+            const currentSettings = DIFFICULTY_SETTINGS[difficultyKey];
+            const biasChance = currentSettings.biasChance; 
+            const distractorChance = 1 - biasChance;
+            
+            if (Math.random() < biasChance) {
+                // Bias Chance: Collapse to the intended, correct letter
+                outcome = originalCorrectLetter;
+            } else {
+                // Remaining Chance: Collapse to one of the distractor states
+                if (distractorStates.length > 0) {
+                    // Randomly select one of the distractor states (each of these share the remaining probability)
+                    const randomIndex = Math.floor(Math.random() * distractorStates.length);
+                    outcome = distractorStates[randomIndex];
+                } else {
+                    // Fallback: If no distractors exist (shouldn't happen), default to the correct letter
+                    outcome = originalCorrectLetter; 
+                }
+            }
+            
+            collapsedState = outcome;
+
+            // 2. Determine the full secret word based on the collapse (PERMANENT CHANGE)
+            const finalSecretWord = secretWord.split('');
+            finalSecretWord[qubitIndex] = collapsedState; // Use the determined outcome
+            secretWord = finalSecretWord.join(''); 
+
+            // 3. Log the event (Set persistent message)
+            const stateDisplay = qubitStates.join('/');
+            
+            let collapseText = `The Qubit Letter (was [${stateDisplay}]) has collapsed to **${collapsedState}**.`;
+            
+            // Update messages to reflect the actual percentages used
+            if (collapsedState !== originalCorrectLetter) {
+                collapseText += ` The word's spelling is now altered (${(distractorChance * 100).toFixed(0)}% chance of this outcome).`;
+            } else {
+                collapseText += ` The original spelling was preserved (${(biasChance * 100).toFixed(0)}% chance of this outcome).`;
+            }
+
+            collapseMessage = `<span style="color:var(--secondary);">✨ **Q-COLLAPSE!** ${collapseText}</span>`;
+            
+            // 4. Update the visual
+            renderWordDisplay();
+            
+            updateHintButtonState(); 
+        }
+
+        /** Handles a player's letter guess. */
+        function handleGuess(letter) {
+            if (gameOver || guessedLetters.has(letter)) return;
+
+            // 1. If this is the first guess, trigger the collapse
+            if (guessedLetters.size === 0) {
+                handleQuantumMeasurement();
+            }
+            
+            guessedLetters.add(letter);
+            
+            const button = keyboardEl.querySelector(`[data-letter="${letter}"]`);
+            button.disabled = true;
+
+            // 2. Check for hit/miss based on the *collapsed* secretWord
+            let transientMsg = "";
+            let isError = false;
+
+            if (secretWord.includes(letter)) {
+                transientMsg = `HIT! The letter ${letter} is in the word.`;
+            } else {
+                mistakes++;
+                transientMsg = `MISS! The letter ${letter} is not in the word. (Mistakes: ${mistakes}/${DIFFICULTY_SETTINGS[ROUNDS[currentRoundIndex]].maxMistakes})`;
+                isError = true;
+            }
+            
+            // Update messages and buttons
+            renderMessage(transientMsg, isError);
+            button.classList.toggle('hit', !isError);
+            button.classList.toggle('miss', isError);
+
+            // 3. Update UI
+            renderWordDisplay();
+            drawHangman();
+            checkGameState();
+            renderKeyboard();
+            updateHintButtonState(); 
+        }
+
+        /** Checks for win/loss conditions and handles round progression. */
+        function checkGameState() {
+            const maxMistakes = DIFFICULTY_SETTINGS[ROUNDS[currentRoundIndex]].maxMistakes;
+            
+            // Check for Win: all letters in the displayed word must match the secret word
+            if (secretWord.split('').every((letter, index) => displayedWord[index] === letter)) {
+                gameOver = true;
+                totalWins++;
+                const message = `<span style="color:var(--success);">🎉 **ROUND ${currentRoundIndex + 1} COMPLETE!** The (altered) word was **${secretWord}**.</span>`;
+                handleRoundEnd(message);
+                
+            // Check for Loss
+            } else if (mistakes >= maxMistakes) {
+                gameOver = true;
+                totalLosses++;
+                const message = `<span style="color:var(--fail);">💀 **ROUND ${currentRoundIndex + 1} FAILED!** The (altered) word was **${secretWord}**.</span>`;
+                handleRoundEnd(message);
+            }
+            updateHintButtonState(); 
+        }
+        
+        /** Common logic for when a round ends (win or loss). */
+        function handleRoundEnd(message) {
+            keyboardEl.querySelectorAll('.key-btn').forEach(btn => btn.disabled = true);
+            
+            currentRoundIndex++;
+            
+            if (currentRoundIndex < ROUNDS.length) {
+                // Next round available
+                messageBoxEl.innerHTML = `${message}<br>Ready for **${ROUNDS[currentRoundIndex]}** round!`;
+                newGameBtnEl.textContent = `Start ${ROUNDS[currentRoundIndex]} Round`;
+                newGameBtnEl.onclick = () => initGame(false); 
+                newGameBtnEl.style.display = 'block'; 
+            } else {
+                // Game Series Complete - Show Modal
+                messageBoxEl.innerHTML = message; // Keep the last round's message visible in the box
+                showEndGameModal();
+                // Disable regular new game button, as the modal handles replay
+                newGameBtnEl.style.display = 'none'; 
+                currentRoundIndex = 0; // Reset index for the next series
+            }
+            renderRoundDisplay();
+        }
+
+        /** Shows the end game modal with final scores. */
+        function showEndGameModal() {
+            const titleEl = document.getElementById('modalTitle');
+            const scoreEl = document.getElementById('modalScore');
+            const messageEl = document.getElementById('modalMessage');
+
+            // Determine final outcome message
+            let titleText;
+            let finalMessage;
+            
+            if (totalWins === ROUNDS.length) {
+                titleText = "Mission Success!";
+                finalMessage = "You mastered the quantum realm and overcame all decoherence events.";
+                titleEl.classList.add('text-green-400');
+                titleEl.classList.remove('text-red-400', 'text-purple-400');
+            } else if (totalWins > totalLosses) {
+                titleText = "Operational Success";
+                finalMessage = "You completed the series with more wins than losses. Data integrity preserved.";
+                titleEl.classList.add('text-purple-400');
+                titleEl.classList.remove('text-red-400', 'text-green-400');
+            } else {
+                titleText = "Mission Failed";
+                finalMessage = "The quantum noise was too strong. The word series was lost to decoherence.";
+                titleEl.classList.add('text-red-400');
+                titleEl.classList.remove('text-green-400', 'text-purple-400');
+            }
+            
+            titleEl.textContent = titleText;
+            scoreEl.innerHTML = `Final Score: <span class="text-green-400 font-bold">${totalWins} Wins</span> / <span class="text-red-400 font-bold">${totalLosses} Losses</span>`;
+            messageEl.textContent = finalMessage;
+
+            endGameModalEl.classList.remove('hidden');
+        }
+        
+        /** Hides the end game modal. */
+        function hideEndGameModal() {
+            endGameModalEl.classList.add('hidden');
+            newGameBtnEl.style.display = 'block'; 
+        }
+
+        /** Handles the 'Back to Galaxy Page' action. */
+        function returnToGalaxy() {
+            // In a single-file environment, we log the action and hide the modal
+            const message = "Simulation complete. Returning you to the Quantum Galaxy Hub... (This action is logged to the console.)";
+            console.log(message);
+            
+            // Just hide the modal and leave the game in its final, summarized state.
+            hideEndGameModal(); 
+            messageBoxEl.innerHTML = `<span style="color:var(--primary);">${message}</span>`;
+            
+            // Note: If this were a multi-page app, this would be a hard redirect (e.g., window.location.href = '/galaxy').
+        }
+
+
+        /** Provides a subtle, conceptual hint about the *intended* word. */
+        function getHint() {
+            const currentMaxMistakes = DIFFICULTY_SETTINGS[ROUNDS[currentRoundIndex]].maxMistakes;
+            const hintThreshold = Math.ceil(currentMaxMistakes / 2) - 1;
+            
+            if (hintUsed || gameOver || collapsedState === null || mistakes < hintThreshold) return;
+
+            hintUsed = true;
+            updateHintButtonState();
+
+            // Reconstruct the original intended word using the first state in qubitStates (which is the original letter)
+            const originalSecretWord = secretWord.split('');
+            originalSecretWord[qubitIndex] = qubitStates[0]; 
+            const clueKey = originalSecretWord.join('');
+            
+            const clue = WORD_CLUES[clueKey] || "The clue for this word is currently unknown in the quantum realm.";
+            
+            // Display the hint
+            hintDisplayEl.textContent = `HINT: ${clue}`;
+        }
+
+        /** Manages the disabled/enabled state and text of the hint button. */
+        function updateHintButtonState() {
+            const currentMaxMistakes = DIFFICULTY_SETTINGS[ROUNDS[currentRoundIndex]].maxMistakes;
+            const hintThreshold = Math.ceil(currentMaxMistakes / 2) - 1;
+
+            if (gameOver) {
+                hintBtnEl.disabled = true;
+                hintBtnEl.textContent = 'Game Over';
+            } else if (hintUsed) {
+                hintBtnEl.disabled = true;
+                hintBtnEl.textContent = 'Hint Used';
+            } else if (collapsedState === null) {
+                hintBtnEl.disabled = true;
+                hintBtnEl.textContent = 'Collapse Qubit First';
+            } else if (mistakes < hintThreshold) {
+                hintBtnEl.disabled = true;
+                hintBtnEl.textContent = `Need ${Math.max(0, hintThreshold - mistakes)} more misses for Hint`;
+            } else {
+                hintBtnEl.disabled = false;
+                hintBtnEl.textContent = 'Get Subtle Hint';
+            }
+        }
+
+        /** Initializes or restarts the game. */
+        function initGame(resetSeries = false) {
+            if (resetSeries) {
+                currentRoundIndex = 0;
+                totalWins = 0;
+                totalLosses = 0;
+                newGameBtnEl.textContent = 'Start New Game Series';
+                newGameBtnEl.onclick = () => initGame(true); 
+            }
+            
+            const difficultyKey = ROUNDS[currentRoundIndex];
+            const currentSettings = DIFFICULTY_SETTINGS[difficultyKey];
+            
+            setupQubitWord();
+            drawHangman();
+            renderWordDisplay();
+            renderKeyboard();
+            hintDisplayEl.textContent = ''; 
+            
+            // Ensure the main new game button is visible when a new round or series starts
+            newGameBtnEl.style.display = 'block'; 
+            
+            // Set initial message 
+            renderMessage(`Word is ${secretWord.length} letters long. Qubit has ${currentSettings.qubitOptions} states. Max misses: ${currentSettings.maxMistakes}.`);
+            updateHintButtonState(); 
+        }
+
+        // --- Start the game on load ---
+        window.onload = () => initGame(true); 
+
+    </script>
+</body>
+</html>

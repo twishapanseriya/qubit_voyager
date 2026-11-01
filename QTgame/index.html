@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Teleportation Quiz - Level 2</title>
+    <!-- Link to the external stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Use MathJax for rendering the quantum notation correctly -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+</head>
+<body>
+
+    <header>
+        <!-- The button is already left-aligned by the flex-based header -->
+        <button class="galaxy-button" onclick="alert('Navigating back to the Galaxy Page...')">Go back to Galaxy Page</button>
+        <div class="score-box">
+            <span class="timer-text">TIME: <span id="timer">01:30</span></span>
+            <span>SCORE: <span id="score">0</span></span>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="quiz-title">QUANTUM QUIZ</h1>
+
+        <!-- Question Display Area -->
+        <div id="question-container">
+            <p id="question-text">Loading Question...</p>
+        </div>
+
+        <!-- Options Grid -->
+        <div id="options-grid">
+            <button class="option-button" id="option-A" data-option="A">a. Option 1</button>
+            <button class="option-button" id="option-B" data-option="B">b. Option 2</button>
+            <button class="option-button" id="option-C" data-option="C">c. Option 3</button>
+            <button class="option-button" id="option-D" data-option="D">d. Option 4</button>
+        </div>
+    </div>
+
+    <!-- Quiz Finished Modal -->
+    <div id="quiz-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Quiz Finished!</h2>
+            <p>Your total score is: <span id="final-score">0</span></p>
+            
+            <div class="modal-actions">
+                <!-- Go back to Galaxy Page button -->
+                <button 
+                    class="galaxy-button button-secondary" 
+                    onclick="alert('Navigating back to the Galaxy Page...')"
+                >
+                    Go back to Galaxy Page
+                </button>
+                <!-- Play Again button -->
+                <button 
+                    class="galaxy-button button-primary" 
+                    onclick="window.location.reload()"
+                >
+                    Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to the external JavaScript file, loaded after the HTML is parsed -->
+    <script src="script.js" defer></script>
+</body>
+</html>

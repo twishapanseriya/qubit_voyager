@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quantum Quest – Teleportation Trials</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- MENU PAGE -->
+  <div id="menuPage" class="screen active">
+    <div class="center-wrap">
+      <div class="title fancy-text">
+        <span class="neon-circle"></span>
+        <span class="main-title">Qubit Voyager</span>
+        <span class="neon-circle"></span>
+      </div>
+      <div class="subtitle">Enter the quantum realm</div>
+      <div class="menu-buttons">
+        <button class="main-btn" onclick="showMap()">▶ START GAME</button>
+        <button class="secondary-btn" onclick="showInstructions()">ℹ Instructions</button>
+        <button class="secondary-btn" onclick="showSettings()">⚙ Settings</button>
+        <button class="text-btn" onclick="exitGame()">🚪 Exit</button>
+      </div>
+    </div>
+  </div>
+  <!-- GALAXY MAP PAGE -->
+  <div id="mapPage" class="screen">
+    <div class="center-wrap">
+      <div class="galaxy-title">Galaxy Map</div>
+      <div class="galaxy-subtitle">Choose your quantum destination</div>
+      <div class="card-grid">
+        <div class="level-card">
+          <div class="planet-icon" style="font-size:5em;">🪐</div>
+          <div class="card-title">Quantum teleportation</div>
+          <div class="card-desc-top">Signal from the Stars</div>
+          <div class="card-label beginner">Beginner</div>
+          <div class="card-desc">Master quantum teleportation by decoding signals .</div>
+          <div class="card-info"><div><span class="info-label">1</span> Portal</div><div><span class="star">🧑🏻‍🚀</span></div></div>
+          <button class="map-btn blue" onclick="showBriefing('entanglia')">Enter Mission</button>
+        </div>
+        <div class="level-card">
+          <div class="planet-icon" style="font-size:5em;">❓</div>
+          <div class="card-title">Quantum Quest</div>
+          <div class="card-desc-top">Trivia</div>
+          <div class="card-label intermediate">Intermediate</div>
+          <div class="card-desc">Take the quiz to know your "Gate" knowledge.</div>
+          <div class="card-info"><div><span class="info-label">2</span> Portal</div><div><span class="star">🤔</span> </div></div>
+          <button class="map-btn purple" onclick="showBriefing('dualon')">Enter Mission</button>
+        </div>
+        <div class="level-card">
+          <div class="planet-icon" style="font-size:5em;">X_X</div>
+          <div class="card-title">Quantum Hangman</div>
+          <div class="card-desc-top">Fun game</div>
+          <div class="card-label advanced">Advanced</div>
+          <div class="card-desc">A quantum tiwst on the classic hangman game.</div>
+          <div class="card-info"><div><span class="info-label">3</span> Portal</div><div><span class="star">💀</span> </div></div>
+          <button class="map-btn orange" onclick="showBriefing('chaos')">Enter Mission</button>
+        </div>
+      </div>
+      <div style="text-align:left;width:90%;">
+        <button class="text-btn" onclick="backToMenu()">← Back to Menu</button>
+      </div>
+    </div>
+  </div>
+  <!-- (Optional: Briefing page here in the future) -->
+  <script src="game.js"></script>
+<!-- Mission Briefing: Quantum teleportation -->
+<div id="briefingPage" class="screen">
+  <div class="briefing-wrap">
+    <button class="briefing-back" onclick="showMap()">← Back to Galaxy Map</button>
+    <div class="briefing-main">
+      <div class="briefing-title-row">
+        <span class="briefing-planet-icon"></span>
+        <span class="briefing-planet-title">Quantum teleportation<span style="color:#36c6ff;"></span></span>
+        <div class="briefing-planet-sub">signal from the stars</div>
+      </div>
+      <div class="briefing-card">
+        <div class="briefing-header-icon">
+          <img src="https://img.icons8.com/fluency/48/satellite.png" style="width:40px;height:40px;" alt="Satellite"/>
+        </div>
+        <div class="briefing-header">Mission Briefing</div>
+        <div class="briefing-desc">
+          <br>
+          Your mission: apply the correct quantum gates to decode the signal and achieve perfect teleportation.
+        </div>
+        <div class="briefing-section">
+          <div class="briefing-section-label">How to Play?</div>
+          <ul class="briefing-list">
+            <li>Start by either pressing E or the button to entangle the qubits.</li>
+            <li>Then press M and C for measurement and classical communication</li>
+            <li>Apply the correct gates :I if 00, X if 01 , Z if 10 and X Z if 11</li>
+            <li>Teleport as many times as you can to score high</li>
+          </ul>
+        </div>
+        <button class="briefing-cta" onclick="openEntangliaGame()">
+          <span style="font-size:1.25em;">▶</span> Begin Transmission
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Mission Briefing: Planet Dualon -->
+<div id="briefingDualon" class="screen">
+  <div class="briefing-wrap">
+    <button class="briefing-back" onclick="showMap()">← Back to Galaxy Map</button>
+    <div class="briefing-main">
+      <div class="briefing-planet-title" style="color:#e490f7;"><span style="font-size:2em;vertical-align:middle;"></span>Quantum Quest</div>
+      <div class="briefing-planet-sub" style="color:#d9bcfc;">A Quantum Quiz</div>
+      <div class="briefing-card" style="background: linear-gradient(115deg,#532a7eef 83%,#35165eef 100%);">
+        <div class="briefing-header-icon">
+          <img src="https://img.icons8.com/ios-filled/50/group-foreground-selected.png" style="width:46px;height:46px;" alt="Alliance"/>
+        </div>
+        <div class="briefing-header">Trivia</div>
+        <div class="briefing-desc">
+        <br>
+        </div>
+        <div class="briefing-section">
+          <div class="briefing-section-label">Instructions:</div>
+          <ul class="briefing-list">
+            <li>The quiz is of 10 questions </li>
+            <li>Every correct answer gives you +5 points</li>
+            <li>Every wrong answer gives you -1 points</li>
+            <li>Beware you only have 1 and half minutes</li>
+          </ul>
+        </div>
+        <button class="briefing-cta" style="background: linear-gradient(90deg,#c077ff,#ff63c3);" onclick="openDualon2Game()">
+          <span style="font-size:1.17em;">👥</span> Start Trivia
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Mission Briefing: Planet Chaos -->
+<div id="briefingChaos" class="screen">
+  <div class="briefing-wrap">
+    <button class="briefing-back" onclick="showMap()">← Back to Galaxy Map</button>
+    <div class="briefing-main">
+      <div class="briefing-planet-title" style="color:#ff8844;"><span style="font-size:2em;vertical-align:middle;"></span> Quantum Hangman</div>
+      <div class="briefing-planet-sub" style="color:#ffd3a7;">Come Play a game</div>
+      <div class="briefing-card" style="background: linear-gradient(120deg,#5b2125ee 85%,#4b160aef 100%);">
+        <div class="briefing-header-icon">
+          <span style="font-size:46px;">🗡</span>
+        </div>
+        <div class="briefing-header">A Fun Game</div>
+        <div class="briefing-desc">
+          Play hangman with a little quantum twist
+        </div>
+        <div class="briefing-section" style="display:flex; gap:24px;"> 
+          <div style="flex:1;background:#5a1826ce;padding:14px;border-radius:9px;">
+            <div style="font-weight:bold;color:#ffb6a1;font-size:1.12em;margin-bottom:5px;">Instructions:</div>
+            <div>• The same classical Hangman but one of the letter is a qubit in superposition.</div>
+            <div>• The first guess whether correct or incorrect it collapses the superposition</div>
+            <div>• With a 70% bias to correct answer for round 1, 50% and 30% for round 2 and round 3.</div>
+            <div><b>•After three incorrect guesses a hint option is enabled.</b></div>
+          </div>
+        </div>
+        <button class="briefing-cta" style="background:linear-gradient(90deg,#fe5733,#ff9147);" onclick="openChaosGame2()">
+          <span style="font-size:1.2em;">▶</span> Begin Battle
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ENTANGLIA: Level 1 Game Screen -->
+<div id="gameEntanglia" class="screen">
+  <div class="game-wrap center-wrap">
+    <button class="briefing-back" onclick="showScreen('briefingPage')">← Back</button>
+    <div class="top-controls">
+      <div class="score">Score: <span id="qq-score">0</span></div>
+      <div class="timer">Time: <span id="qq-timer">01:30</span></div>
+      <button class="briefing-back" style="right:40px;left:auto;" onclick="entangliaReplay()">⟳ Replay</button>
+    </div>
+
+    <div class="game-area">
+      <!-- Encoder -->
+      <div class="panel encoder-panel">
+        <div class="panel-title">Computer<br><span class="muted">ENCODER</span></div>
+        <canvas id="encoderBloch" width="220" height="220"></canvas>
+        <div class="coords">
+          <div class="coord"><div class="coord-label">X</div><div id="enc-x">—</div></div>
+          <div class="coord"><div class="coord-label">Y</div><div id="enc-y">—</div></div>
+          <div class="coord"><div class="coord-label">Z</div><div id="enc-z">—</div></div>
+        </div>
+        <div class="hint">Press <b>E</b> to create entanglement</div>
+      </div>
+
+      <!-- Link and classical bits -->
+      <div class="link-panel">
+        <div class="bell-display">
+          <div class="bit top" id="bit-top">1</div>
+          <div class="bit bottom" id="bit-bottom">0</div>
+        </div>
+        <div class="link-line">
+          <div class="classical-dot" id="dot-top"></div>
+          <div class="classical-dot" id="dot-bottom"></div>
+        </div>
+        <div class="controls">
+          <button class="action-btn" id="ent-btn" onclick="entangliaEntangle()">E: Entangle</button>
+          <button class="action-btn" id="bell-btn" onclick="entangliaMeasure()">M: Bell Measure</button>
+          <button class="action-btn" id="send-btn" onclick="entangliaSend()" >C: Send</button>
+        </div>
+      </div>
+
+      <!-- Decoder -->
+      <div class="panel decoder-panel">
+        <div class="panel-title">Player<br><span class="muted">DECODER</span></div>
+        <canvas id="decoderBloch" width="220" height="220"></canvas>
+        <div class="coords">
+          <div class="coord"><div class="coord-label">X</div><div id="dec-x">—</div></div>
+          <div class="coord"><div class="coord-label">Y</div><div id="dec-y">—</div></div>
+          <div class="coord"><div class="coord-label">Z</div><div id="dec-z">—</div></div>
+        </div>
+        <div class="decoder-controls">
+          <button class="gate-btn" id="gate-x" onclick="entangliaApplyGate('X')">X</button>
+          <button class="gate-btn" id="gate-z" onclick="entangliaApplyGate('Z')">Z</button>
+          <button class="gate-btn" id="gate-i" onclick="entangliaApplyGate('I')">I</button>
+        </div>
+        <div class="hint">Apply gates in correct order after C arrives</div>
+      </div>
+    </div>
+
+    <div class="bottom-bar">
+      <div id="round-result" class="muted"></div>
+      <div>
+        <button class="action-btn" id="continue-btn" onclick="entangliaNextRound()" style="display:none">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Results Popup (add inside #gameEntanglia) -->
+<div id="ent-results-overlay" class="results-overlay hidden" aria-hidden="true"><!-- ENTANGLIA: Level 1 Game Screen -->
+<div id="gameEntanglia" class="screen">
+  <div class="game-wrap center-wrap">
+    ... (your entire game layout) ...
+  </div>
+
+  <!-- Results Popup MUST BE INSIDE gameEntanglia -->
+  <div id="ent-results-overlay" class="results-overlay hidden" aria-hidden="true">
+    <div class="results-card">
+      <div class="results-header">
+        <div class="results-title">⏳ Time’s Up!</div>
+        <div class="results-sub">Mission summary — Planet Entanglia</div>
+      </div>
+
+      <div class="results-body">
+        <div class="results-metrics">
+          <div class="metric">
+            <div class="metric-label">Score</div>
+            <div id="res-score" class="metric-value">0</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Failures</div>
+            <div id="res-fail" class="metric-value">0</div>
+          </div>
+        </div>
+
+        <div class="results-tips">
+          <div class="tips-title">How to improve</div>
+          <ul id="res-tips-list" class="tips-list"></ul>
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="main-btn" id="res-replay-btn">⟲ Replay Level</button>
+        <button class="secondary-btn" id="res-back-btn">← Back to Briefing</button>
+      </div>
+
+      <button class="results-close" id="res-close" aria-label="close">✕</button>
+    </div>
+  </div>
+  <!-- END results overlay -->
+</div>
+<!-- END gameEntanglia -->
+
+<!-- Just before body end, your JS -->
+<script src="game.js"></script>
+</body>
+</html>
