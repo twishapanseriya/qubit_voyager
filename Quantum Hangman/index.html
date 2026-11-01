@@ -195,6 +195,11 @@
 <body>
 
     <div class="game-container">
+        <div style="text-align: left; margin-bottom: 12px;">
+            <button onclick="returnToGalaxy()" class="bg-gray-600 hover:bg-gray-500 text-white text-sm font-semibold py-1.5 px-3 rounded shadow transition duration-150">
+                ← Back to Galaxy Map
+            </button>
+        </div>
         <h1>Quantum Hangman</h1>
         <p class="text-gray-400">Guess the word before the man is hung. One letter is a **Qubit**—your first guess collapses its state!</p>
 
@@ -686,17 +691,8 @@
 
         /** Handles the 'Back to Galaxy Page' action. */
         function returnToGalaxy() {
-            // In a single-file environment, we log the action and hide the modal
-            const message = "Simulation complete. Returning you to the Quantum Galaxy Hub... (This action is logged to the console.)";
-            console.log(message);
-            
-            // Just hide the modal and leave the game in its final, summarized state.
-            hideEndGameModal(); 
-            messageBoxEl.innerHTML = `<span style="color:var(--primary);">${message}</span>`;
-            
-            // Note: If this were a multi-page app, this would be a hard redirect (e.g., window.location.href = '/galaxy').
+            window.location.href = "../QTgame2/index.html?screen=mapPage";
         }
-
 
         /** Provides a subtle, conceptual hint about the *intended* word. */
         function getHint() {

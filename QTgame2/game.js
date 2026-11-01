@@ -57,6 +57,10 @@ function openDualon2Game() {
   window.location.href = '../QTgame/index.html';
 }
 
+function openChaosGame2() {
+  window.location.href = '../Quantum Hangman/index.html';
+}
+
 function openEntangliaGame() {
   showScreen('gameEntanglia');
   startEntanglia();
