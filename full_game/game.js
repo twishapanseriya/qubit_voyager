@@ -54,7 +54,7 @@ let entanglia = {
 
 /* Entry Points */
 function openDualon2Game() {
-  window.location.href = '../QTgame/index.html';
+  window.location.href = '../quantum_quest/index.html';
 }
 
 function openChaosGame2() {
